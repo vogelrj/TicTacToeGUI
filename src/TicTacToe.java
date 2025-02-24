@@ -8,6 +8,7 @@ public class TicTacToe extends JFrame {
     private String currentPlayer;
     private int moveCount;
     private static final int MOVES_FOR_WIN = 5;
+    private static final int MOVES_FOR_TIE = 7;
 
     public TicTacToe() {
         setTitle("Tic-Tac-Toe");
@@ -63,18 +64,19 @@ public class TicTacToe extends JFrame {
         }
         if (board[0][0].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][2].getText().equals(currentPlayer))
             return true;
-        if (board[0][2].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][0].getText().equals(currentPlayer))
-            return true;
-        return false;
+        return board[0][2].getText().equals(currentPlayer) && board[1][1].getText().equals(currentPlayer) && board[2][0].getText().equals(currentPlayer);
     }
 
     private boolean checkTie() {
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (board[row][col].getText().equals("")) {
-                    return false;
-                }
+        if (moveCount < MOVES_FOR_TIE) return false;
+        boolean xFlag, oFlag;
+        for (int col = 0; col < 3; col++) {
+            xFlag = oFlag = false;
+            for (int row = 0; row < 3; row++) {
+                if (board[row][col].getText().equals("X")) xFlag = true;
+                if (board[row][col].getText().equals("O")) oFlag = true;
             }
+            if (!(xFlag && oFlag)) return false;
         }
         return true;
     }
@@ -83,7 +85,7 @@ public class TicTacToe extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             TicTacToeTile clickedTile = (TicTacToeTile) e.getSource();
-            if (!clickedTile.getText().equals("")) {
+            if (!clickedTile.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Invalid move! Try again.");
                 return;
             }
@@ -100,7 +102,7 @@ public class TicTacToe extends JFrame {
                 return;
             }
 
-            if (checkTie()) {
+            if (moveCount >= MOVES_FOR_TIE && checkTie()) {
                 JOptionPane.showMessageDialog(null, "It's a tie!");
                 if (promptNewGame()) {
                     startNewGame();
